@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Fasten</string>
+    <string name="main_activity_current_weather_button_title">Current Weather</string>
+    <string name="main_activity_search_weather_button_title">Search Weather</string>
+</resources>
