@@ -1,5 +1,6 @@
 package ai.testtask.fasten;
 
+import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,9 @@ import com.google.android.gms.location.LocationResult;
 
 import java.text.DateFormat;
 import java.util.Date;
+
+import ai.testtask.fasten.databinding.ActivityMainBinding;
+import ai.testtask.fasten.databinding.MainActivityBinding;
 
 public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
 
@@ -32,11 +36,12 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     private Location mCurrentLocation;
 
     private LocationProvider mLocationProvider;
+    private MainActivityBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.main_activity);
 
         mRequestingLocationUpdates = true;
         mLastUpdateTime = "";
