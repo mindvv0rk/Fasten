@@ -12,19 +12,14 @@ import com.google.android.gms.location.LocationResult;
 import java.text.DateFormat;
 import java.util.Date;
 
-import ai.testtask.fasten.databinding.ActivityMainBinding;
 import ai.testtask.fasten.databinding.MainActivityBinding;
+import ai.testtask.fasten.providers.LocationProvider;
 
 public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private static final int REQUEST_CHECK_SETTINGS = 0x1;
 
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "keys:requestingLocationUpdates";
     private final static String KEY_LOCATION = "keys:location";
@@ -47,8 +42,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         mLastUpdateTime = "";
 
         updateValuesFromBundle(savedInstanceState);
-
-        mLocationProvider = new LocationProvider(this, createLocationRequest(), this);
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -68,16 +61,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         }
     }
 
-    private LocationRequest createLocationRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-//        locationRequest.setNumUpdates(1);
 
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-        return locationRequest;
-    }
 
     @Override
     protected void onResume() {
