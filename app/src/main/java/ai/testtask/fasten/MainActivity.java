@@ -5,6 +5,7 @@ import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -14,12 +15,11 @@ import java.util.Date;
 
 import ai.testtask.fasten.databinding.MainActivityBinding;
 import ai.testtask.fasten.providers.LocationProvider;
+import ai.testtask.fasten.weather.current.CurrentWeatherActivity;
 
-public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
+public class MainActivity extends AppCompatActivity implements MainActivityClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
-
 
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "keys:requestingLocationUpdates";
     private final static String KEY_LOCATION = "keys:location";
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.main_activity);
+        mBinding.setHandler(this);
 
         mRequestingLocationUpdates = true;
         mLastUpdateTime = "";
@@ -61,24 +62,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         }
     }
 
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mRequestingLocationUpdates)
-            mLocationProvider.startLocationUpdates();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Remove location updates to save battery.
-        mLocationProvider.stopLocationUpdates();
-    }
-
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
@@ -87,31 +70,12 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     }
 
     @Override
-    public void onLocationUpdatesStopped() {
-        Log.i(TAG, "location update stopped!");
+    public void onCurrentWeatherClick(View view) {
+        CurrentWeatherActivity.start(this);
     }
 
     @Override
-    public void onLocationSettingsError(Exception e) {
-        Log.e(TAG, "Location settings error", e);
-    }
+    public void onSearchWeatherClick(View view) {
 
-    @Override
-    public void onFusedLocationClientSecurityError(SecurityException e) {
-        Log.e(TAG, "Location client security error", e);
-    }
-
-    @Override
-    public void onLocationResult(LocationResult result) {
-        mCurrentLocation = result.getLastLocation();
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        Log.i(TAG, "time = " + mLastUpdateTime
-                + "; \nlatitude = " + mCurrentLocation.getLatitude()
-                + "; \nlongitude = " + mCurrentLocation.getLongitude()
-                + "; \naccuracy = " + mCurrentLocation.getAccuracy());
-
-        if (mCurrentLocation.getAccuracy() <= 10.0) {
-            mLocationProvider.stopLocationUpdates();
-        }
     }
 }

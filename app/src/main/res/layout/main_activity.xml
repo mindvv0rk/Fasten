@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
+    <data>
+        <variable
+            name="handler"
+            type="ai.testtask.fasten.MainActivityClickHandler"/>
+    </data>
+
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -13,6 +19,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:onClick="@{handler.onCurrentWeatherClick}"
             android:text="@string/main_activity_current_weather_button_title"
             app:layout_constraintBottom_toTopOf="@+id/search_weather"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -26,6 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/main_activity_search_weather_button_title"
+            android:onClick="@{handler.onSearchWeatherClick}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="@+id/current_weather"
             app:layout_constraintRight_toRightOf="@+id/current_weather"
