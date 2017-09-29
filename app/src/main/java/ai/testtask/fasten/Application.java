@@ -1,8 +1,8 @@
 package ai.testtask.fasten;
 
-import ai.testtask.fasten.di.AppModule;
-import ai.testtask.fasten.di.Dagger;
-import ai.testtask.fasten.di.DaggerAppComponent;
+import ai.testtask.fasten.core.di.AppModule;
+import ai.testtask.fasten.core.di.Dagger;
+import ai.testtask.fasten.core.di.DaggerAppComponent;
 
 public final class Application extends android.app.Application {
 

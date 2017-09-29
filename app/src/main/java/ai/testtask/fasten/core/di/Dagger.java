@@ -1,4 +1,4 @@
-package ai.testtask.fasten.di;
+package ai.testtask.fasten.core.di;
 
 import android.support.annotation.NonNull;
 
