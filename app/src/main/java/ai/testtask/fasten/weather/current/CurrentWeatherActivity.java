@@ -20,19 +20,20 @@ import android.view.View;
 
 import ai.testtask.fasten.BuildConfig;
 import ai.testtask.fasten.R;
+import ai.testtask.fasten.core.FormViewState;
 import ai.testtask.fasten.core.PresenterManager;
 import ai.testtask.fasten.databinding.CurrentWeatherActivityBinding;
 import ai.testtask.fasten.providers.IPermissionsManager;
 import ai.testtask.fasten.providers.LocationProvider;
 import ai.testtask.fasten.providers.PermissionsManager;
+import ai.testtask.fasten.weather.model.weather.Weather;
 
 
-public final class CurrentWeatherActivity extends AppCompatActivity implements ICurrentWeatherView {
+public final class CurrentWeatherActivity extends AppCompatActivity implements ICurrentWeatherView, CurrentWeatherClickHandler {
 
     private static final String TAG = CurrentWeatherActivity.class.getSimpleName();
 
     private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private static final int REQUEST_CHECK_SETTINGS = 0x1;
 
     private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
@@ -56,6 +57,8 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.current_weather_activity);
+
+        mBinding.setRetryHandler(this);
 
         mPermissionsManager = new PermissionsManager();
 
@@ -176,5 +179,31 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
         locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         return locationRequest;
+    }
+
+    @Override
+    public void showLoading() {
+        mBinding.setViewState(FormViewState.LOADING);
+    }
+
+    @Override
+    public void showError(String message) {
+        mBinding.setViewState(FormViewState.ERROR);
+        mBinding.setErrorMessage(message);
+    }
+
+    @Override
+    public void showWeather(Weather weather) {
+        mBinding.setViewState(FormViewState.SUCCESS);
+        String cityName = weather.getLocation().getCountryName()
+                .concat(", ")
+                .concat(weather.getLocation().getCityName());
+        mBinding.setCityName(cityName);
+        //populate adapter
+    }
+
+    @Override
+    public void onRetryClick(View view) {
+        mPresenter.reloadData();
     }
 }

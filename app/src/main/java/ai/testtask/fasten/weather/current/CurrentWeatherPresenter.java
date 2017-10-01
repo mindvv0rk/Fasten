@@ -20,6 +20,7 @@ import ai.testtask.fasten.providers.ILocationProvider;
 import ai.testtask.fasten.providers.LocationProvider;
 import ai.testtask.fasten.weather.model.response.weather.WeatherResponse;
 import ai.testtask.fasten.weather.model.weather.Weather;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -36,7 +37,9 @@ public class CurrentWeatherPresenter extends AbstractPresenter<ICurrentWeatherVi
     private ILocationProvider mLocationProvider;
     private String mLastUpdateTime;
     private Location mCurrentLocation;
+    private Weather mCurrentWeather;
     private boolean mRequestingLocationUpdates;
+    private Subscription mWeatherSubscription;
 
 
     public CurrentWeatherPresenter(ILocationProvider locationProvider) {
@@ -44,6 +47,26 @@ public class CurrentWeatherPresenter extends AbstractPresenter<ICurrentWeatherVi
         mLocationProvider = locationProvider;
         mLocationProvider.setLocationCallback(this);
         mRequestingLocationUpdates = false;
+    }
+
+    public void reloadData() {
+        mLastUpdateTime = null;
+        mCurrentLocation = null;
+        mRequestingLocationUpdates = false;
+        mCurrentWeather = null;
+        startLocationUpdates();
+    }
+
+
+    @Override
+    protected void onViewAttached(@NonNull ICurrentWeatherView view) {
+        super.onViewAttached(view);
+
+        if (mCurrentWeather != null) {
+            showWeather(mCurrentWeather);
+        } else if (mWeatherSubscription != null && !mWeatherSubscription.isUnsubscribed()) {
+            showLoading();
+        }
     }
 
     @Override
@@ -54,6 +77,7 @@ public class CurrentWeatherPresenter extends AbstractPresenter<ICurrentWeatherVi
 
     public void startLocationUpdates() {
         if (!mRequestingLocationUpdates && mCurrentLocation == null) {
+            showLoading();
             mRequestingLocationUpdates = true;
             mLocationProvider.startLocationUpdates();
         }
@@ -104,7 +128,8 @@ public class CurrentWeatherPresenter extends AbstractPresenter<ICurrentWeatherVi
                 .concat(",")
                 .concat(String.valueOf(longitude))
                 .concat(NetworkModuleFactory.WEATHER_REQUEST_FORMAT);
-        mWeatherAPI
+
+        mWeatherSubscription = mWeatherAPI
                 .getForecastFor10DaysByLocation(param)
                 .subscribeOn(Schedulers.io())
                 .map(new Func1<WeatherResponse, Weather>() {
@@ -120,16 +145,39 @@ public class CurrentWeatherPresenter extends AbstractPresenter<ICurrentWeatherVi
                             @Override
                             public void call(Weather weather) {
                                 Log.i(TAG, "Weather data by location loaded");
+                                mCurrentWeather = weather;
+                                showWeather(weather);
+                                mWeatherSubscription.unsubscribe();
                             }
                         },
                         new Action1<Throwable>() {
                             @Override
                             public void call(Throwable throwable) {
                                 Log.e(TAG, "Error on weather request", throwable);
-                                //??
+                                showError("Error while executing the request. Please try again.");
+                                mWeatherSubscription.unsubscribe();
                             }
                         }
                 );
+    }
+
+
+    private void showLoading() {
+        for (ICurrentWeatherView view : getViews()) {
+            view.showLoading();
+        }
+    }
+
+    private void showError(String message) {
+        for (ICurrentWeatherView view : getViews()) {
+            view.showError(message);
+        }
+    }
+
+    private void showWeather(Weather weather) {
+        for (ICurrentWeatherView view : getViews()) {
+            view.showWeather(weather);
+        }
     }
 
 }

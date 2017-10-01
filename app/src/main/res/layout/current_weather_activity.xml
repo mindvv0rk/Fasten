@@ -1,9 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <data>
+        <import type="ai.testtask.fasten.core.FormViewState"/>
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewState"
+            type="int"/>
+
+        <variable
+            name="cityName"
+            type="String"/>
+
+        <variable
+            name="errorMessage"
+            type="String"/>
+
+        <variable
+            name="retryHandler"
+            type="ai.testtask.fasten.weather.current.CurrentWeatherClickHandler"/>
+
+
+    </data>
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp">
 
-    </android.support.constraint.ConstraintLayout>
+        <LinearLayout
+            android:visibility="@{viewState == FormViewState.SUCCESS ? View.VISIBLE : View.GONE}"
+            android:id="@+id/weather_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/city_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@{cityName}"
+                tools:text="Russia, Novosibirsk" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_gravity="center"
+            android:id="@+id/loading_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:visibility="@{viewState == FormViewState.LOADING ? View.VISIBLE : View.GONE}"
+            android:orientation="vertical"
+            tools:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/weather_loading_message"/>
+
+            <ProgressBar
+                android:layout_margin="16dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/error_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:visibility="@{viewState == FormViewState.ERROR ? View.VISIBLE : View.GONE}"
+            tools:visibility="gone">
+
+            <TextView
+                android:id="@+id/error_field"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@{errorMessage}"
+                tools:text="Shit happens!"/>
+
+            <Button
+                android:id="@+id/retry"
+                android:layout_margin="16dp"
+                android:onClick="@{retryHandler.onRetryClick}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/retry_button_title"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
 </layout>
