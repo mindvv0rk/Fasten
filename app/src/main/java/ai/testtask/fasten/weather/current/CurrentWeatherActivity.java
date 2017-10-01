@@ -15,6 +15,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.View;
 
@@ -46,6 +48,7 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
 
     private IPermissionsManager mPermissionsManager;
     private boolean mCheckingPermissions;
+    private WeatherAdapter mAdapter;
 
 
     public static void start(Context context) {
@@ -59,6 +62,11 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
         mBinding = DataBindingUtil.setContentView(this, R.layout.current_weather_activity);
 
         mBinding.setRetryHandler(this);
+
+        mAdapter = new WeatherAdapter();
+        mBinding.recycler.setAdapter(mAdapter);
+        mBinding.recycler.setLayoutManager(new LinearLayoutManager(this));
+        mBinding.recycler.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         mPermissionsManager = new PermissionsManager();
 
@@ -199,7 +207,9 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
                 .concat(", ")
                 .concat(weather.getLocation().getCityName());
         mBinding.setCityName(cityName);
-        //populate adapter
+
+        mAdapter.setData(weather.getForecastDay());
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
