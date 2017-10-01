@@ -57,22 +57,7 @@ public final class SearchWeatherActivity extends AppCompatActivity implements IS
 
         mAutocompleteAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line);
         mBinding.searchView.setAdapter(mAutocompleteAdapter);
-        mBinding.searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mPresenter.searchQuery(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+        mBinding.searchView.addTextChangedListener(getTextWatcherForSearchView());
 
         mBinding.searchView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -152,5 +137,24 @@ public final class SearchWeatherActivity extends AppCompatActivity implements IS
     @Override
     public void onRetryClick(View view) {
         mPresenter.retry();
+    }
+
+    private TextWatcher getTextWatcherForSearchView() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mPresenter.searchQuery(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
     }
 }
