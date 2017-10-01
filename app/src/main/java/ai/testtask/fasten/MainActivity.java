@@ -16,6 +16,7 @@ import java.util.Date;
 import ai.testtask.fasten.databinding.MainActivityBinding;
 import ai.testtask.fasten.providers.LocationProvider;
 import ai.testtask.fasten.weather.current.CurrentWeatherActivity;
+import ai.testtask.fasten.weather.search.SearchWeatherActivity;
 
 public class MainActivity extends AppCompatActivity implements MainActivityClickHandler {
 
@@ -76,6 +77,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityClick
 
     @Override
     public void onSearchWeatherClick(View view) {
-
+        SearchWeatherActivity.start(this);
     }
 }

@@ -3,6 +3,7 @@ package ai.testtask.fasten.core.di;
 import javax.inject.Singleton;
 
 import ai.testtask.fasten.weather.current.CurrentWeatherPresenter;
+import ai.testtask.fasten.weather.search.SearchWeatherPresenter;
 import dagger.Component;
 
 @Singleton
@@ -13,4 +14,6 @@ import dagger.Component;
 public interface AppComponent {
 
     void inject(CurrentWeatherPresenter currentWeatherPresenter);
+
+    void inject(SearchWeatherPresenter searchWeatherPresenter);
 }

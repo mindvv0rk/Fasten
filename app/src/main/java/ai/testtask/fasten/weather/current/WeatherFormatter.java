@@ -39,7 +39,7 @@ public final class WeatherFormatter {
     }
 
     private String convertWindSpeed(int windSpeed) {
-        double result = ((double) windSpeed) / ONE_KPH_IN_MPS;
+        double result = ((double) windSpeed) * ONE_KPH_IN_MPS;
         return String.valueOf((int) result);
     }
 

@@ -13,7 +13,6 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -31,7 +30,7 @@ import ai.testtask.fasten.providers.PermissionsManager;
 import ai.testtask.fasten.weather.model.weather.Weather;
 
 
-public final class CurrentWeatherActivity extends AppCompatActivity implements ICurrentWeatherView, CurrentWeatherClickHandler {
+public final class CurrentWeatherActivity extends AppCompatActivity implements ICurrentWeatherView, RetryHandler {
 
     private static final String TAG = CurrentWeatherActivity.class.getSimpleName();
 
@@ -49,7 +48,6 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
     private IPermissionsManager mPermissionsManager;
     private boolean mCheckingPermissions;
     private WeatherAdapter mAdapter;
-
 
     public static void start(Context context) {
         Intent starter = new Intent(context, CurrentWeatherActivity.class);
