@@ -44,11 +44,11 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
     private int mPresenterId;
 
     private IPermissionsManager mPermissionsManager;
+    private boolean mCheckingPermissions;
 
 
     public static void start(Context context) {
         Intent starter = new Intent(context, CurrentWeatherActivity.class);
-//        starter.putExtra();
         context.startActivity(starter);
     }
 
@@ -58,6 +58,8 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
         mBinding = DataBindingUtil.setContentView(this, R.layout.current_weather_activity);
 
         mPermissionsManager = new PermissionsManager();
+
+        mCheckingPermissions = false;
 
         mPresenterId = CurrentWeatherActivity.class.getSimpleName().hashCode();
         mPresenter = PresenterManager.getPresenter(mPresenterId, new PresenterManager.PresenterFactory<CurrentWeatherPresenter>() {
@@ -78,8 +80,12 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
     protected void onResume() {
         super.onResume();
         if (mPermissionsManager.checkPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+            mCheckingPermissions = false;
             mPresenter.startLocationUpdates();
         } else {
+            if (mCheckingPermissions) return;
+
+            mCheckingPermissions = true;
             mPermissionsManager.requestPermission(
                     this,
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -105,7 +111,6 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
     @Override
     protected void onPause() {
         super.onPause();
-        mPresenter.stopLocationUpdates();
     }
 
     @Override
@@ -115,14 +120,24 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
     }
 
     @Override
+    protected void onDestroy() {
+        if (!isChangingConfigurations()) {
+            PresenterManager.removePresenter(mPresenterId);
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i(TAG, "onRequestPermissionResult");
         if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.length <= 0) {
+                mCheckingPermissions = false;
                 Log.i(TAG, "User interaction was cancelled.");
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.i(TAG, "Permission granted, updates requested, starting location updates");
-                    mPresenter.startLocationUpdates();
+                Log.i(TAG, "Permission granted, updates requested, starting location updates");
+                mCheckingPermissions = false;
+                mPresenter.startLocationUpdates();
             } else {
                 showSnackbar(R.string.permission_denied_explanation,
                         R.string.settings, new View.OnClickListener() {
@@ -149,7 +164,8 @@ public final class CurrentWeatherActivity extends AppCompatActivity implements I
                 findViewById(android.R.id.content),
                 getString(mainTextStringId),
                 Snackbar.LENGTH_INDEFINITE)
-                .setAction(getString(actionStringId), listener).show();
+                .setAction(getString(actionStringId), listener)
+                .show();
     }
 
     private LocationRequest createLocationRequest() {

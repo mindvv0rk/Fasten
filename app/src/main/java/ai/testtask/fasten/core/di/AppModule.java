@@ -25,10 +25,4 @@ public final class AppModule {
     public Context getContext() {
         return mContext;
     }
-
-    @Singleton
-    @Provides
-    public Gson getGson() {
-        return new Gson();
-    }
 }
