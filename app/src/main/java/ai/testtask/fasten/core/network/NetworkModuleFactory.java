@@ -15,8 +15,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public final class NetworkModuleFactory {
 
     private static final String TOKEN = "6058ac702f7bdd2e";
-    private static final String WEATHER_BASE_URL = "http://api.wunderground.com/api/".concat(TOKEN).concat("/");
+    private static final String WEATHER_BASE_URL = "http://api.wunderground.com/api/";
     private static final String AUTOCOMPLETE_BASE_URL = "http://autocomplete.wunderground.com/";
+
+    public static final String WEATHER_REQUEST_FORMAT = ".json";
 
     private static final String WEATHER_HTTP_LOG_TAG = "WeatherOkHttp";
     private static final String AUTOCOMPLETE__HTTP_LOG_TAG = "AutocompleteOkHttp";
@@ -25,7 +27,8 @@ public final class NetworkModuleFactory {
     private static final int SOCKET_CONNECT_TIMEOUT = 30;
 
     public static IWeatherAPI createWeatherAPI() {
-        return createAPI(WEATHER_BASE_URL, IWeatherAPI.class, WEATHER_HTTP_LOG_TAG);
+        String url = WEATHER_BASE_URL.concat(TOKEN).concat("/");
+        return createAPI(url, IWeatherAPI.class, WEATHER_HTTP_LOG_TAG);
     }
 
     public static IAutocompleteAPI createAutocompleteAPI() {

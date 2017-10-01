@@ -13,7 +13,7 @@ public final class NetworkModule {
 
     @Singleton
     @Provides
-    public IWeatherAPI provideWeaterNetworkModule() {
+    public IWeatherAPI provideWeatherNetworkModule() {
         return NetworkModuleFactory.createWeatherAPI();
     }
 
