@@ -22,15 +22,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityClick
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private final static String KEY_REQUESTING_LOCATION_UPDATES = "keys:requestingLocationUpdates";
-    private final static String KEY_LOCATION = "keys:location";
-    private final static String KEY_LAST_UPDATED_TIME_STRING = "keys:lastUpdatedTimeString";
-
-    private boolean mRequestingLocationUpdates;
-    private String mLastUpdateTime;
-
-    private Location mCurrentLocation;
-
     private LocationProvider mLocationProvider;
     private MainActivityBinding mBinding;
 
@@ -39,35 +30,6 @@ public class MainActivity extends AppCompatActivity implements MainActivityClick
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.main_activity);
         mBinding.setHandler(this);
-
-        mRequestingLocationUpdates = true;
-        mLastUpdateTime = "";
-
-        updateValuesFromBundle(savedInstanceState);
-    }
-
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean(
-                        KEY_REQUESTING_LOCATION_UPDATES);
-            }
-
-            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
-                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            }
-
-            if (savedInstanceState.keySet().contains(KEY_LAST_UPDATED_TIME_STRING)) {
-                mLastUpdateTime = savedInstanceState.getString(KEY_LAST_UPDATED_TIME_STRING);
-            }
-        }
-    }
-
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
-        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
-        savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
-        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
