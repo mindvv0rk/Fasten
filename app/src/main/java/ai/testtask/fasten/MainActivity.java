@@ -1,9 +1,11 @@
 package ai.testtask.fasten;
 
+import android.databinding.DataBindingUtil;
 import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -11,16 +13,14 @@ import com.google.android.gms.location.LocationResult;
 import java.text.DateFormat;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements LocationProvider.LocationCallback {
+import ai.testtask.fasten.databinding.MainActivityBinding;
+import ai.testtask.fasten.providers.LocationProvider;
+import ai.testtask.fasten.weather.current.CurrentWeatherActivity;
+import ai.testtask.fasten.weather.search.SearchWeatherActivity;
+
+public class MainActivity extends AppCompatActivity implements MainActivityClickHandler {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    private static final int REQUEST_PERMISSIONS_REQUEST_CODE = 34;
-    private static final int REQUEST_CHECK_SETTINGS = 0x1;
-
-    private static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
-    private static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     private final static String KEY_REQUESTING_LOCATION_UPDATES = "keys:requestingLocationUpdates";
     private final static String KEY_LOCATION = "keys:location";
@@ -32,18 +32,18 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     private Location mCurrentLocation;
 
     private LocationProvider mLocationProvider;
+    private MainActivityBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.main_activity);
+        mBinding.setHandler(this);
 
         mRequestingLocationUpdates = true;
         mLastUpdateTime = "";
 
         updateValuesFromBundle(savedInstanceState);
-
-        mLocationProvider = new LocationProvider(this, createLocationRequest(), this);
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -63,33 +63,6 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
         }
     }
 
-    private LocationRequest createLocationRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
-        locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
-//        locationRequest.setNumUpdates(1);
-
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-
-        return locationRequest;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (mRequestingLocationUpdates)
-            mLocationProvider.startLocationUpdates();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Remove location updates to save battery.
-        mLocationProvider.stopLocationUpdates();
-    }
-
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
@@ -98,31 +71,12 @@ public class MainActivity extends AppCompatActivity implements LocationProvider.
     }
 
     @Override
-    public void onLocationUpdatesStopped() {
-        Log.i(TAG, "location update stopped!");
+    public void onCurrentWeatherClick(View view) {
+        CurrentWeatherActivity.start(this);
     }
 
     @Override
-    public void onLocationSettingsError(Exception e) {
-        Log.e(TAG, "Location settings error", e);
-    }
-
-    @Override
-    public void onFusedLocationClientSecurityError(SecurityException e) {
-        Log.e(TAG, "Location client security error", e);
-    }
-
-    @Override
-    public void onLocationResult(LocationResult result) {
-        mCurrentLocation = result.getLastLocation();
-        mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        Log.i(TAG, "time = " + mLastUpdateTime
-                + "; \nlatitude = " + mCurrentLocation.getLatitude()
-                + "; \nlongitude = " + mCurrentLocation.getLongitude()
-                + "; \naccuracy = " + mCurrentLocation.getAccuracy());
-
-        if (mCurrentLocation.getAccuracy() <= 10.0) {
-            mLocationProvider.stopLocationUpdates();
-        }
+    public void onSearchWeatherClick(View view) {
+        SearchWeatherActivity.start(this);
     }
 }
